@@ -2,7 +2,9 @@ package com.example.myapplication;
 
 import android.app.Service;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 
@@ -12,8 +14,10 @@ public class MusicService extends Service {
 
     public MusicService() {
         mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
         try {
-            mediaPlayer.setDataSource("/data/music.mp3");
+            mediaPlayer.setDataSource(this, Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.music));
             mediaPlayer.prepare();
             mediaPlayer.setLooping(true);
         } catch (Exception e) {
@@ -39,9 +43,10 @@ public class MusicService extends Service {
     public void stop() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
                 mediaPlayer.reset();
-                mediaPlayer.setDataSource("/data/music.mp3");
+                mediaPlayer.setDataSource(this, Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.music));
                 mediaPlayer.prepare();
                 mediaPlayer.seekTo(0);
             } catch (Exception e) {
